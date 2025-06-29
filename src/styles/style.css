@@ -33,3 +33,11 @@
 .input-hidden{
     opacity: 0;
 }
+
+.correct{
+    color: green;
+
+}
+.incorrect{
+    color: red;
+}
