@@ -41,3 +41,13 @@
 .incorrect{
     color: red;
 }
+.skipped { 
+    color: gray;
+}
+
+.cursor-current{
+    border-left: 2px solid yellow;
+}
+.cursor-right-current{
+   border-right: 2px solid yellow;
+}

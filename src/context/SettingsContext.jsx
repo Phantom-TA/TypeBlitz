@@ -1,8 +1,8 @@
-import { createContext } from "react";
+import { createContext ,useState , useContext} from "react";
 
 const SettingsContext = createContext();
 
-export function SettingsProvider({children}){
+export const SettingsProvider=({children})=>{
     const [seconds,setSeconds] =useState(30);
     
     return (

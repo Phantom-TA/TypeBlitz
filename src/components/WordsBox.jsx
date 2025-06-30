@@ -1,5 +1,5 @@
 import { useRef, useState,useEffect, createRef } from "react";
-import { useSettings } from "../context/SettingsContext";
+import { useSettings } from "../context/SettingsContext.jsx";
 import {generate} from 'random-words'
 import '../styles/style.css'
 
@@ -8,8 +8,8 @@ const Wordsbox =() =>{
   
   const [words,setWords]= useState(generate(300))
   
-  //const {seconds} = useSettings;
-  const seconds = 30
+  const {seconds} = useSettings();
+  
   
   const [time,setTime]=useState(seconds)
   const [countDown,setCountDown] =useState(seconds);
@@ -33,6 +33,7 @@ const Wordsbox =() =>{
   const[wordsRef,setWordsRef] = useState(arrRef)
 
   const startTimer = () =>{
+   
     const interval = setInterval(timer,1000)
     setInter(interval)
      function timer() {
@@ -48,22 +49,27 @@ const Wordsbox =() =>{
         })
         }
     }
-    
+     
+    const focusInput = () => {
+        inputRef.current.focus()
+    }
     useEffect(() => {
         inputRef.current.focus()
+        wordsRef[0].current.childNodes[0].className ="char cursor-current"
       }, [])
 
    const handleKeyDown =(e) =>{
-      if(!start){
-        startTimer();
-        setStart(true);
-      }
       
       if(e.keyCode!==8 && e.key.length > 1){
         e.preventDefault()
         return 
       }
 
+      if(!start){
+        startTimer();
+        setStart(true);
+      }
+      
       let allChars = wordsRef[currWordInd].current.childNodes;
       
       
@@ -72,7 +78,19 @@ const Wordsbox =() =>{
          const correctChars = wordsRef[currWordInd].current.querySelectorAll('.correct')
          
          if(correctChars.length === allChars.length)
-            setCorrectWords(correctWords+1)
+            setCorrectWords(correctWords+1) 
+
+         if(allChars.length <= currCharInd)
+            allChars[currCharInd-1].classList.remove('cursor-right-current')
+        else{
+             setMissedChars(missedChars + ( allChars.length-currCharInd))
+         for(let i=currCharInd; i < allChars.length ; i++){
+            allChars[i].className +=" skipped"
+         }
+
+         allChars[currCharInd].classList.remove('cursor-current')
+        }
+
          
          if (
             wordsRef[currWordInd + 1].current.offsetLeft < wordsRef[currWordInd].current.offsetLeft
@@ -80,7 +98,7 @@ const Wordsbox =() =>{
            wordsRef[currWordInd].current.scrollIntoView();
          }
 
-
+         wordsRef[currWordInd+1].current.childNodes[0].className ="char cursor-current"
          setCurrWordInd(currWordInd + 1)
          setCurrCharInd(0)
 
@@ -90,17 +108,19 @@ const Wordsbox =() =>{
       if(e.keyCode===8){
         if(currCharInd !==0 ){
             if(currCharInd === allChars.length){
-                if(allChars[currCharInd-1].className.includes("extra"))
+                if(allChars[currCharInd-1].className.includes("extra")){
                     allChars[currCharInd-1].remove();
+                    allChars[currCharInd-2].className += " cursor-right-current"
+                }
                 else
-                    allChars[currCharInd-1].className="char"
+                    allChars[currCharInd-1].className="char cursor-current"
 
                 setCurrCharInd(currCharInd-1)
                 return;
             }
 
             allChars[currCharInd].className ="char"
-            allChars[currCharInd-1].className="char"
+            allChars[currCharInd-1].className="char cursor-current"
             setCurrCharInd(currCharInd-1)
             
         }
@@ -111,7 +131,8 @@ const Wordsbox =() =>{
          setExtraChars(extraChars+1)
          let extraChar = document.createElement('span')
          extraChar.innerText = e.key
-         extraChar.className = "char incorrect extra "
+         extraChar.className = "char incorrect extra cursor-right-current"
+         allChars[currCharInd-1].classList.remove('cursor-right-current')
          wordsRef[currWordInd].current.append(extraChar)
          setCurrCharInd(currCharInd+1)
          return;
@@ -124,18 +145,26 @@ const Wordsbox =() =>{
       else{
         allChars[currCharInd].className="char incorrect"
         setIncorrectChars(incorrectChars+1)
+      } 
+      if(currCharInd+1 === allChars.length)
+      {
+        allChars[currCharInd].className += " cursor-right-current"
       }
+      else{
+        allChars[currCharInd+1].className = "char cursor-current"
+      }
+       
 
       setCurrCharInd(currCharInd+1)
 
    }
 
    const calcWPM =() =>{
-     return Math.round((correctChars / 5) / ( time / 60))
+     return Math.round((correctChars / 5) / ( time / 60) )
    }
    
    const calcAccuracy = () =>{ 
-     return  Math.round((correctChars / (correctChars + incorrectChars + extraChars + missedChars))*100)
+     return  Math.round((correctChars / (correctChars + incorrectChars + extraChars + missedChars))*100 )
    }
 
     return(
@@ -148,7 +177,7 @@ const Wordsbox =() =>{
             ) :
 
         (
-        <div className="words-box">
+        <div className="words-box" onClick={focusInput}>
             
             <div className="words">
                 {
@@ -171,6 +200,7 @@ const Wordsbox =() =>{
             <input
               type="text"
               ref={inputRef}
+              className="   input-hidden"
               onKeyDown={(e) => handleKeyDown(e)}
             />
        
