@@ -8,8 +8,8 @@ const Wordsbox =() =>{
   
   const [words,setWords]= useState(generate(300))
   
-  const {seconds} = useSettings;
-
+  //const {seconds} = useSettings;
+  const seconds = 30
   
   const [time,setTime]=useState(seconds)
   const [countDown,setCountDown] =useState(seconds);
@@ -22,6 +22,8 @@ const Wordsbox =() =>{
   const [correctWords , setCorrectWords] = useState(0)
   const [incorrectChars , setIncorrectChars] = useState(0)
   const [extraChars ,setExtraChars] =useState(0)
+  const [missedChars ,setMissedChars] = useState(0)
+  const [interval , setInter] =useState(null)
   
   const arrRef = () =>{
     return Array(words.length).fill(0).map(() => createRef(null))
@@ -29,9 +31,10 @@ const Wordsbox =() =>{
   
   const inputRef= useRef(null)
   const[wordsRef,setWordsRef] = useState(arrRef)
-  
+
   const startTimer = () =>{
     const interval = setInterval(timer,1000)
+    setInter(interval)
      function timer() {
         setCountDown((prevCountDown)=>{
              if(prevCountDown === 1)
@@ -40,6 +43,7 @@ const Wordsbox =() =>{
                 clearInterval(interval)
                 return 0;
              }
+             console.log(prevCountDown)
              return prevCountDown-1;
         })
         }
@@ -83,6 +87,36 @@ const Wordsbox =() =>{
          return 
       }
 
+      if(e.keyCode===8){
+        if(currCharInd !==0 ){
+            if(currCharInd === allChars.length){
+                if(allChars[currCharInd-1].className.includes("extra"))
+                    allChars[currCharInd-1].remove();
+                else
+                    allChars[currCharInd-1].className="char"
+
+                setCurrCharInd(currCharInd-1)
+                return;
+            }
+
+            allChars[currCharInd].className ="char"
+            allChars[currCharInd-1].className="char"
+            setCurrCharInd(currCharInd-1)
+            
+        }
+        return ;
+      }
+
+      if(currCharInd === allChars.length){
+         setExtraChars(extraChars+1)
+         let extraChar = document.createElement('span')
+         extraChar.innerText = e.key
+         extraChar.className = "char incorrect extra "
+         wordsRef[currWordInd].current.append(extraChar)
+         setCurrCharInd(currCharInd+1)
+         return;
+      }
+
       if(e.key === allChars[currCharInd].innerText){
         allChars[currCharInd].className="char correct"
         setCorrectChars(correctChars+1)
@@ -96,9 +130,26 @@ const Wordsbox =() =>{
 
    }
 
+   const calcWPM =() =>{
+     return Math.round((correctChars / 5) / ( time / 60))
+   }
+   
+   const calcAccuracy = () =>{ 
+     return  Math.round((correctChars / (correctChars + incorrectChars + extraChars + missedChars))*100)
+   }
+
     return(
         <div >
+            {end ? (
+                <div>
+                   <h1>WPM : {calcWPM()}</h1>
+                   <h1>Accuracy : {calcAccuracy()}% </h1>
+                </div>
+            ) :
+
+        (
         <div className="words-box">
+            
             <div className="words">
                 {
                     words.map((word,index)=>(
@@ -115,6 +166,8 @@ const Wordsbox =() =>{
                 }
             </div>
          </div>
+            )}
+            <h1>CountDown : {countDown}</h1>
             <input
               type="text"
               ref={inputRef}
