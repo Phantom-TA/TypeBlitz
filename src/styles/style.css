@@ -41,6 +41,9 @@
 .incorrect{
     color: red;
 }
+.extra{
+    color:lightcoral
+}
 .skipped { 
     color: gray;
 }
