@@ -11,7 +11,6 @@
    display: flex;
     margin-bottom: 50px;
     justify-content: space-between;
-
     padding: 30px 40px 30px 40px;
 
 }
@@ -67,7 +66,9 @@
 .input-hidden{
     opacity: 0;
 }
-
+.char{
+    color: rgb(99, 111, 124);
+}
 .correct{
     color: #6cd4f1;
 

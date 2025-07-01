@@ -31,8 +31,12 @@ const Wordsbox =() =>{
   }
   
   const inputRef= useRef(null)
+
+  //referencing words
   const[wordsRef,setWordsRef] = useState(arrRef())
 
+
+  //function to start the timer and the countdown
   const startTimer = () =>{
    
     const interval = setInterval(timer,1000)
@@ -50,16 +54,20 @@ const Wordsbox =() =>{
         })
         }
     }
-     
+    
+    //to focus on the input field 
     const focusInput = () => {
         inputRef.current.focus()
     }
+
+    //to focus on the input field on initial render and to put the cursor at the beginning
     useEffect(() => {
         inputRef.current.focus()
         wordsRef[0].current.childNodes[0].className ="char cursor-current"
       }, [])
-   
-   const restart =() =>{
+    
+    //function to restart and to refresh all the states
+    const restart =() =>{
         setCurrCharInd(0)
         setCurrWordInd(0)
         clearInterval(interval)
@@ -78,14 +86,17 @@ const Wordsbox =() =>{
         resetClassname();
 
    }
-
+   
+   //To handle the key pressed by the user 
    const handleKeyDown =(e) =>{
       
+    //To prevent default functioning of the keys other than backspace and keys having length less than 2 
       if(e.keyCode!==8 && e.key.length > 1){
         e.preventDefault()
         return 
       }
-
+     
+    
       if(!start){
         startTimer();
         setStart(true);
@@ -93,7 +104,7 @@ const Wordsbox =() =>{
       
       let allChars = wordsRef[currWordInd].current.childNodes;
       
-      
+      //to handle if key is a space 
       if(e.keyCode === 32){
        
          const correctChars = wordsRef[currWordInd].current.querySelectorAll('.correct')
@@ -125,7 +136,7 @@ const Wordsbox =() =>{
 
          return 
       }
-
+      //to handle when key is backspace 
       if(e.keyCode===8){
         if(currCharInd !==0 ){
             if(currCharInd === allChars.length){
@@ -147,7 +158,8 @@ const Wordsbox =() =>{
         }
         return ;
       }
-
+      
+      //to handle the extra characters 
       if(currCharInd === allChars.length){
          setExtraChars(extraChars+1)
          let extraChar = document.createElement('span')
@@ -158,15 +170,19 @@ const Wordsbox =() =>{
          setCurrCharInd(currCharInd+1)
          return;
       }
-
+      
+      //to handle the correct characters
       if(e.key === allChars[currCharInd].innerText){
         allChars[currCharInd].className="char correct"
         setCorrectChars(correctChars+1)
       }
+      //to handle the incorrect characters
       else{
         allChars[currCharInd].className="char incorrect"
         setIncorrectChars(incorrectChars+1)
       } 
+
+      //handling the placing of cursor 
       if(currCharInd+1 === allChars.length)
       {
         allChars[currCharInd].className += " cursor-right-current"
@@ -179,9 +195,9 @@ const Wordsbox =() =>{
       setCurrCharInd(currCharInd+1)
 
    }
-
+   
+   //to restart if there is a change in seconds after the first render
    const isFirstRender = useRef(true);
-
     useEffect(() => {
         if (isFirstRender.current) {
         isFirstRender.current = false;
@@ -189,7 +205,8 @@ const Wordsbox =() =>{
         }
         restart();
     }, [seconds]);
-
+   
+    //to reset the className of all chars that have been changed 
    const resetClassname = () =>{
       wordsRef.map( (i)=> { 
         Array.from(i.current.childNodes).map((j) =>{
@@ -200,14 +217,17 @@ const Wordsbox =() =>{
       })
       wordsRef[0].current.childNodes[0].className="char cursor-current"
    }
-
+   
+   //function to calculate WPM 
    const calcWPM =() =>{
      return Math.round((correctChars / 5) / ( time / 60) )
    }
-   
+    
+   //function to calculate accuracy
    const calcAccuracy = () =>{ 
      return  Math.round((correctChars / (correctChars + incorrectChars + extraChars + missedChars))*100 )
    }
+   
    
    const handleRestart=() =>{
     restart();

@@ -5,6 +5,7 @@ import { useSettings } from "../context/SettingsContext"
 const TimeMenu =({countdown})=>{
     const {seconds,setSeconds} = useSettings()
     
+    //update the time if user chooses different time mode
    const updateTime =(e) =>{
     setSeconds(e.target.id);
    }
