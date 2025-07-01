@@ -2,11 +2,12 @@ import { useRef, useState,useEffect, createRef } from "react";
 import { useSettings } from "../context/SettingsContext.jsx";
 import {generate} from 'random-words'
 import '../styles/style.css'
+import TimeMenu from "./TimeMenu.jsx";
 
 const Wordsbox =() =>{
     
   
-  const [words,setWords]= useState(generate(300))
+  const [words,setWords]= useState(generate(400))
   
   const {seconds} = useSettings();
   
@@ -30,7 +31,7 @@ const Wordsbox =() =>{
   }
   
   const inputRef= useRef(null)
-  const[wordsRef,setWordsRef] = useState(arrRef)
+  const[wordsRef,setWordsRef] = useState(arrRef())
 
   const startTimer = () =>{
    
@@ -57,6 +58,26 @@ const Wordsbox =() =>{
         inputRef.current.focus()
         wordsRef[0].current.childNodes[0].className ="char cursor-current"
       }, [])
+   
+   const restart =() =>{
+        setCurrCharInd(0)
+        setCurrWordInd(0)
+        clearInterval(interval)
+        setStart(false)
+        setEnd(false)
+        setWords(generate(400))
+        setWordsRef(arrRef())
+        setCountDown(seconds)
+        setTime(seconds)
+        setCorrectChars(0)
+        setCorrectWords(0)
+        setIncorrectChars(0)
+        setMissedChars(0)
+        setExtraChars(0)
+        focusInput();
+        resetClassname();
+
+   }
 
    const handleKeyDown =(e) =>{
       
@@ -159,6 +180,27 @@ const Wordsbox =() =>{
 
    }
 
+   const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+        isFirstRender.current = false;
+        return; 
+        }
+        restart();
+    }, [seconds]);
+
+   const resetClassname = () =>{
+      wordsRef.map( (i)=> { 
+        Array.from(i.current.childNodes).map((j) =>{
+            if(j.className.includes("extra"))
+                j.remove();
+            j.className = "char"
+        })
+      })
+      wordsRef[0].current.childNodes[0].className="char cursor-current"
+   }
+
    const calcWPM =() =>{
      return Math.round((correctChars / 5) / ( time / 60) )
    }
@@ -166,9 +208,13 @@ const Wordsbox =() =>{
    const calcAccuracy = () =>{ 
      return  Math.round((correctChars / (correctChars + incorrectChars + extraChars + missedChars))*100 )
    }
-
+   
+   const handleRestart=() =>{
+    restart();
+   }
     return(
         <div >
+            
             {end ? (
                 <div>
                    <h1>WPM : {calcWPM()}</h1>
@@ -176,7 +222,8 @@ const Wordsbox =() =>{
                 </div>
             ) :
 
-        (
+        (<div>
+            <TimeMenu countdown={countDown} />
         <div className="words-box" onClick={focusInput}>
             
             <div className="words">
@@ -195,14 +242,18 @@ const Wordsbox =() =>{
                 }
             </div>
          </div>
-            )}
-            <h1>CountDown : {countDown}</h1>
+          </div>  )}
+            <div className="restart-container">
+            <button className="restart" onClick={handleRestart}> Restart</button>
+            </div>
+
             <input
               type="text"
               ref={inputRef}
               className="   input-hidden"
               onKeyDown={(e) => handleKeyDown(e)}
             />
+            
        
         </div>
         

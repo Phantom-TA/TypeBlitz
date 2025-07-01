@@ -3,7 +3,7 @@ import { createContext ,useState , useContext} from "react";
 const SettingsContext = createContext();
 
 export const SettingsProvider=({children})=>{
-    const [seconds,setSeconds] =useState(30);
+    const [seconds,setSeconds] =useState(15);
     
     return (
         <SettingsContext.Provider value={{seconds,setSeconds}}>
