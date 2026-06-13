@@ -1,6 +1,6 @@
 # ⚡ TypeBlitz
 
-TypeBlitz is a high-performance, real-time typing speed and accuracy testing application. Designed for minimal latency and a seamless typing experience, it offers instant visual feedback, custom timing configurations, and dynamic pagination.
+TypeBlitz is a high-performance, real-time typing speed and accuracy testing application. Designed for minimal latency and a seamless typing experience,it offers instant visual feedback, custom timing configurations, and dynamic pagination.
 
 🔗 **Live Deployment:** [https://typeblitz-sigma.vercel.app/](https://typeblitz-sigma.vercel.app/)
 
