@@ -32,6 +32,18 @@ TypeBlitz is a modern web application designed for typists, programmers, and any
 
 ---
 
+## 🛠️ Tech Stack
+
+TypeBlitz is built on a modern, high-performance web development stack:
+
+* **Frontend Library:** **React 19** — Utilizing dynamic DOM refs (`createRef`) for direct node manipulation and the Context API for lightweight state management.
+* **Routing:** **React Router 7** — Handling clean client-side routing.
+* **Build System:** **Vite 7** — Delivering instantaneous development builds (HMR) and highly optimized production builds.
+* **Word Generation:** **random-words** — A small, lightweight package for dynamic and custom word generation on every restart.
+* **Styling & Theme:** **Vanilla CSS** — Custom responsive designs, keyboard-based styling rules, and smooth blinking cursors without heavy CSS framework bloat.
+
+---
+
 ## 🏗️ Architecture & Data Flow
 
 Below is the conceptual architecture of TypeBlitz, illustrating the component interactions, context state management, and key event-handling pipeline.
